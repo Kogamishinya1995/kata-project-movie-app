@@ -7,7 +7,6 @@ import TodoApp from "./components/todoapp";
 interface Task {
   id: string;
   text: string;
-
   done: boolean;
   created: number;
   edited: boolean;
