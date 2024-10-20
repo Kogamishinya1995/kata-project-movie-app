@@ -67,81 +67,64 @@ module.exports = {
     "no-useless-return": "error",
     "no-console": ["error", { allow: ["log", "warn", "error"] }],
     "@typescript-eslint/no-shadow": "error",
-    "@typescript-eslint/no-unsafe-assignment": "off", // research on this
-    "@typescript-eslint/no-unsafe-call": "off", // research on this
-    // "import/order": [
-    //   "error",
-    //   {
-    //     groups: [
-    //       "builtin",
-    //       "index",
-    //       "sibling",
-    //       "parent",
-    //       "internal",
-    //       "external",
-    //       "object",
-    //       "type",
-    //     ],
-    //   },
-    // ],
-    // "import/exports-last": "error",
-    // "import/newline-after-import": "error",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
     "import/order": [
       "error",
       {
         groups: [
-          "builtin", // Built-in Node.js modules
-          "external", // External modules from node_modules
-          "internal", // Internal packages
-          ["sibling", "parent"], // Parent and sibling modules
-          "index", // Index files
-          "unknown", // Unknown group
+          "builtin",
+          "external",
+          "internal",
+          ["sibling", "parent"],
+          "index", 
+          "unknown", 
         ],
         pathGroups: [
           {
-            pattern: "react|react-dom|react-router-dom", // Libraries
+            pattern: "react|react-dom|react-router-dom",
             group: "external",
             position: "before",
           },
           {
-            pattern: "components/**", // Components
+            pattern: "components/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "utils/**", // Utils (functions)
+            pattern: "utils/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "const/**", // Constants
+            pattern: "const/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "redux/**", // Redux files
+            pattern: "redux/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "selectors/**", // Selectors
+            pattern: "selectors/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "images/**", // Images
+            pattern: "images/**",
             group: "internal",
             position: "after",
           },
           {
-            pattern: "style/**", // Styles
+            pattern: "style/**",
             group: "internal",
             position: "after",
           },
         ],
         pathGroupsExcludedImportTypes: ["builtin", "external"],
         alphabetize: {
-          order: "asc", // Alphabetize within each group
+          order: "asc",
           caseInsensitive: true,
         },
       },

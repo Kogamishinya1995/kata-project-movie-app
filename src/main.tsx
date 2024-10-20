@@ -1,20 +1,10 @@
-/* eslint-disable import/no-named-as-default-member */
-/* eslint-disable import/default */
 import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import { ThemeProvider } from "@Components/HOC";
-import App from "./App";
-import "./tailwind.css";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
 
-const root = document.getElementById("root");
-if (root) {
-  ReactDOM.createRoot(root).render(
-    <StrictMode>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
-    </StrictMode>
-  );
-} else {
-  throw new Error("Root element not found");
-}
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
