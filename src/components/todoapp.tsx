@@ -11,7 +11,7 @@ interface Task {
 
 interface TodoAppProps {
   tasks: Task[];
-  filtred: Task[];
+  filtered: Task[];
   toggleTask: (id: string) => void;
   removeTask: (id: string) => void;
   editedModeOn: (id: string) => void;
@@ -19,14 +19,14 @@ interface TodoAppProps {
 }
 
 const TodoApp: React.FC<TodoAppProps> = ({
-  filtred,
+  filtered,
   toggleTask,
   removeTask,
   editedModeOn,
   editedTask,
 }) => (
   <ul className="todo-list">
-    {filtred.map((task) => {
+    {filtered.map((task) => {
       const liClasses = classNames({
         completed: task.done,
         editing: task.edited,
@@ -69,7 +69,7 @@ const TodoApp: React.FC<TodoAppProps> = ({
               defaultValue={task.text}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
-                  editedTask(task.id, event.currentTarget.value); // now using event.currentTarget.value
+                  editedTask(task.id, event.currentTarget.value);
                 }
               }}
             />

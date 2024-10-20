@@ -1,7 +1,7 @@
 interface FooterProps {
   allTasks: number;
   clearCompletedTasks: () => void;
-  taskFilter: (status: string | boolean) => void;
+  taskFilter: (status: "all" | boolean) => void;
 }
 
 const Footer = ({ allTasks, clearCompletedTasks, taskFilter }: FooterProps) => (

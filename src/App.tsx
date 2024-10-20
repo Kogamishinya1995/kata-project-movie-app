@@ -16,10 +16,10 @@ interface Task {
 const MyComponent = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [allTasks, setAllTasks] = useState<number>(0);
-  const [filtred, setFiltred] = useState<Task[]>(tasks);
+  const [filtered, setFiltered] = useState<Task[]>(tasks);
 
   useEffect(() => {
-    setFiltred(tasks);
+    setFiltered(tasks);
   }, [tasks]);
 
   const handleNameChangeFunc = (taskText: string) => {
@@ -105,17 +105,17 @@ const MyComponent = () => {
       status === "all"
         ? [...tasks]
         : tasks.filter((task) => task.done === status);
-    setFiltred(filteredTasks);
+    setFiltered(filteredTasks);
   };
 
   return (
     <>
-      <section className="todoapp">
+      <section className="todo-app">
         <Header handleNameChange={handleNameChangeFunc} />
         <section className="main">
           <TodoApp
             tasks={tasks}
-            filtred={filtred}
+            filtered={filtered}
             toggleTask={toggleTask}
             removeTask={removeTask}
             editedModeOn={editedModeOn}

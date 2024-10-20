@@ -16,7 +16,6 @@ const Header = ({ handleNameChange }: HeaderProps) => {
       <input
         className="new-todo"
         placeholder="What needs to be done?"
-        autoFocus
         onKeyDown={keyDownFunction}
       />
     </header>

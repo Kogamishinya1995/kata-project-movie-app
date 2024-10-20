@@ -56,7 +56,7 @@ module.exports = {
       },
     ],
     "arrow-body-style": ["error", "as-needed"],
-    "no-unused-vars": "error",
+    "no-unused-vars": "off",
     "react/jsx-filename-extension": ["warn", { extensions: [".jsx", ".tsx"] }],
     "import/no-unresolved": "error",
     "import/no-duplicates": "error",
