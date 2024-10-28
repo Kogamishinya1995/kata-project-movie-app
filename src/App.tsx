@@ -1,134 +1,100 @@
-import uniqueId from "lodash/uniqueId";
 import { useEffect, useState } from "react";
-import Footer from "./components/footer";
-import Header from "./components/header.tsx";
-import TodoApp from "./components/todoapp";
 
-interface Task {
-  id: string;
-  text: string;
-  done: boolean;
-  created: number;
-  edited: boolean;
-}
+type MovieProps = {
+  imageUrl: string;
+  movieTitle: string;
+  releaseDate: string;
+  movieDescription: string;
+};
 
-const MyComponent = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [allTasks, setAllTasks] = useState<number>(0);
-  const [filtered, setFiltered] = useState<Task[]>(tasks);
+type ApiResponse = {
+  page: number;
+  results: MovieApi[];
+};
+
+type MovieApi = {
+  id: number;
+  poster_path: string;
+  original_title: string;
+  release_date: string;
+  overview: string;
+};
+
+type MovieData = {
+  id: number;
+  imageUrl: string;
+  movieTitle: string;
+  releaseDate: string;
+  movieDescription: string;
+};
+
+const Movie: React.FC<MovieProps> = ({
+  imageUrl,
+  movieTitle,
+  releaseDate,
+  movieDescription,
+}) => (
+  <div className="movie-item">
+    <img className="movie-item__poster" src={imageUrl} alt={movieTitle} />
+    <div className="movie-item__description">
+      <h1>{movieTitle}</h1>
+      <p>{releaseDate}</p>
+      <p>{movieDescription}</p>
+    </div>
+  </div>
+);
+const App = () => {
+  const [movies, setMovies] = useState<MovieData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+
+  const url = "https://api.themoviedb.org/3/search/movie?query=return&page=1";
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWVjMzVlY2RmZTk2YTgwOWJkODkwMmZiMTNkOWIwOCIsIm5iZiI6MTczMDAzMjA0Mi4yODc1MDUsInN1YiI6IjY3MWUwMDAxYTRhYzhhNDMyYzVjOTUwMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sJQk2MObjCEutcgIxjjBW-SkV9xayN7ylR3VaASrVbg",
+    },
+  };
 
   useEffect(() => {
-    setFiltered(tasks);
-  }, [tasks]);
-
-  const handleNameChangeFunc = (taskText: string) => {
-    setTasks((prevState) => [
-      ...prevState,
-      {
-        id: uniqueId("task_"),
-        text: taskText,
-        done: false,
-        created: Date.now(),
-        edited: false,
-      },
-    ]);
-    setAllTasks(allTasks + 1);
-  };
-
-  const toggleTask = (id: string) => {
-    setTasks((currentTask) => {
-      const updatedTasks = currentTask.map((task) => {
-        if (task.id !== id) return task;
-
-        return {
-          ...task,
-          done: !task.done,
-        };
+    setLoading(true);
+    fetch(url, options)
+      .then((res) => res.json() as Promise<ApiResponse>)
+      .then((json) => {
+        const fetchedMovies: MovieData[] = json.results.map((movie) => ({
+          id: movie.id,
+          imageUrl: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+          movieTitle: movie.original_title,
+          releaseDate: movie.release_date,
+          movieDescription: movie.overview,
+        }));
+        setMovies(fetchedMovies);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
       });
+  }, []);
 
-      const activeTasksCount = updatedTasks.filter((task) => !task.done).length;
-      setAllTasks(activeTasksCount);
-
-      return updatedTasks;
-    });
-  };
-
-  const editedModeOn = (id: string) => {
-    setTasks((currentTask) =>
-      currentTask.map((task) => {
-        if (task.id !== id) return task;
-
-        return {
-          ...task,
-          edited: true,
-        };
-      })
-    );
-  };
-
-  const editedTask = (id: string, newText: string) => {
-    setTasks((currentTask) =>
-      currentTask.map((task) => {
-        if (task.id !== id) return task;
-
-        return {
-          ...task,
-          text: newText,
-          edited: false,
-        };
-      })
-    );
-  };
-
-  const removeTask = (id: string) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.filter((task) => task.id !== id);
-
-      const activeTasksCount = updatedTasks.filter((task) => !task.done).length;
-      setAllTasks(activeTasksCount);
-
-      return updatedTasks;
-    });
-  };
-
-  const clearCompletedTasks = () => {
-    setTasks((prevTasks) => {
-      const activeTasks = prevTasks.filter((task) => !task.done);
-      setAllTasks(activeTasks.length);
-      return activeTasks;
-    });
-  };
-
-  const taskFilter = (status: "all" | boolean) => {
-    const filteredTasks =
-      status === "all"
-        ? [...tasks]
-        : tasks.filter((task) => task.done === status);
-    setFiltered(filteredTasks);
-  };
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Failed to fetch movies.</p>;
 
   return (
-    <>
-      <section className="todo-app">
-        <Header handleNameChange={handleNameChangeFunc} />
-        <section className="main">
-          <TodoApp
-            tasks={tasks}
-            filtered={filtered}
-            toggleTask={toggleTask}
-            removeTask={removeTask}
-            editedModeOn={editedModeOn}
-            editedTask={editedTask}
-          />
-          <Footer
-            allTasks={allTasks}
-            clearCompletedTasks={clearCompletedTasks}
-            taskFilter={taskFilter}
-          />
-        </section>
-      </section>
-    </>
+    <div className="movie-container">
+      {movies.map((movie) => (
+        <Movie
+          key={movie.id}
+          imageUrl={movie.imageUrl}
+          movieTitle={movie.movieTitle}
+          releaseDate={movie.releaseDate}
+          movieDescription={movie.movieDescription}
+        />
+      ))}
+    </div>
   );
 };
 
-export default MyComponent;
+export default App;
