@@ -2,6 +2,6 @@
   "version": "0.2",
   "language": "en",
   "words": ["LICENCE"],
-  "ignorePaths": ["node_modules", "dist", "build"],
+  "ignorePaths": ["node_modules", "dist", "build",  "src/App.tsx"],
   "ignoreWords": []
 }

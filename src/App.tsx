@@ -1,98 +1,50 @@
 import { useEffect, useState } from "react";
+import MovieItem from "@Components/Movie.tsx";
+import shortenDescription from "@Utils/shortenDescription.ts";
+import { MovieApi } from "./types.ts";
 
-type MovieProps = {
-  imageUrl: string;
-  movieTitle: string;
-  releaseDate: string;
-  movieDescription: string;
-};
-
-type ApiResponse = {
-  page: number;
-  results: MovieApi[];
-};
-
-type MovieApi = {
-  id: number;
-  poster_path: string;
-  original_title: string;
-  release_date: string;
-  overview: string;
-};
-
-type MovieData = {
-  id: number;
-  imageUrl: string;
-  movieTitle: string;
-  releaseDate: string;
-  movieDescription: string;
-};
-
-const Movie: React.FC<MovieProps> = ({
-  imageUrl,
-  movieTitle,
-  releaseDate,
-  movieDescription,
-}) => (
-  <div className="movie-item">
-    <img className="movie-item__poster" src={imageUrl} alt={movieTitle} />
-    <div className="movie-item__description">
-      <h1>{movieTitle}</h1>
-      <p>{releaseDate}</p>
-      <p>{movieDescription}</p>
-    </div>
-  </div>
-);
 const App = () => {
-  const [movies, setMovies] = useState<MovieData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
-
-  const url = "https://api.themoviedb.org/3/search/movie?query=return&page=1";
+  const url = "https://api.themoviedb.org/3/search/movie?query=russia";
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
       Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWVjMzVlY2RmZTk2YTgwOWJkODkwMmZiMTNkOWIwOCIsIm5iZiI6MTczMDAzMjA0Mi4yODc1MDUsInN1YiI6IjY3MWUwMDAxYTRhYzhhNDMyYzVjOTUwMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sJQk2MObjCEutcgIxjjBW-SkV9xayN7ylR3VaASrVbg",
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWVjMzVlY2RmZTk2YTgwOWJkODkwMmZiMTNkOWIwOCIsIm5iZiI6MTczMDQ4MDk3Mi42NjU3ODU4LCJzdWIiOiI2NzFlMDAwMWE0YWM4YTQzMmM1Yzk1MDEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GuwoEE_PIEy9QyueO1fk_Butq1nM2qTvo-EY6NjTbrE",
     },
   };
 
+  const [movieState, setMovieState] = useState<MovieApi>();
+
+  console.log("state", movieState?.results);
+
   useEffect(() => {
-    setLoading(true);
     fetch(url, options)
-      .then((res) => res.json() as Promise<ApiResponse>)
-      .then((json) => {
-        const fetchedMovies: MovieData[] = json.results.map((movie) => ({
-          id: movie.id,
-          imageUrl: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-          movieTitle: movie.original_title,
-          releaseDate: movie.release_date,
-          movieDescription: movie.overview,
-        }));
-        setMovies(fetchedMovies);
-        setLoading(false);
+      .then((res) => res.json())
+      .then((json: MovieApi) => {
+        setMovieState(json);
+        console.log(json);
       })
       .catch(() => {
-        setError(true);
-        setLoading(false);
+        console.error("not give data");
       });
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Failed to fetch movies.</p>;
-
   return (
-    <div className="movie-container">
-      {movies.map((movie) => (
-        <Movie
-          key={movie.id}
-          imageUrl={movie.imageUrl}
-          movieTitle={movie.movieTitle}
-          releaseDate={movie.releaseDate}
-          movieDescription={movie.movieDescription}
-        />
-      ))}
+    <div>
+      <ul className="movie-container">
+        {movieState?.results.map((item) => (
+          <li key={item.id}>
+            <MovieItem
+              title={item.title}
+              release_date={item.release_date}
+              genres={item.genre_ids}
+              description={shortenDescription(item.overview)}
+              poster_path={item.poster_path}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
