@@ -1,18 +1,26 @@
-import { Alert, Spin } from "antd";
+import { Spin } from "antd";
 import debounce from "lodash/debounce";
 import { useEffect, useState } from "react";
+import { Offline, Online } from "react-detect-offline";
+import ResponsivePagination from "react-responsive-pagination";
+import AlertComponent from "@Components/Alert.tsx";
 import MovieItem from "@Components/Movie.tsx";
 import formateDate from "@Utils/formateDate.ts";
 import shortenDescription from "@Utils/shortenDescription.ts";
 import { MovieApi } from "./types.ts";
+import "react-responsive-pagination/themes/classic.css";
 
 const App = () => {
   const [movieState, setMovieState] = useState<MovieApi>();
   const [errorState, setErrorState] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inputState, setInputState] = useState(" ");
+  const [pageState, setPageState] = useState(1);
 
-  const url = `https://api.themoviedb.org/3/search/movie?query=${inputState}`;
+  console.log(movieState);
+  console.log("PAGES", pageState);
+
+  const url = `https://api.themoviedb.org/3/search/movie?query=${inputState}&page=${pageState.toString()}`;
   const options = {
     method: "GET",
     headers: {
@@ -32,6 +40,7 @@ const App = () => {
       .then((json: MovieApi) => {
         setMovieState(json);
         setErrorState(false);
+        setPageState(json.page);
       })
       .catch(() => {
         console.error("Failed to fetch data");
@@ -47,41 +56,48 @@ const App = () => {
       fetchMovies();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputState]);
+  }, [inputState, pageState]);
 
   const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputState(e.target.value);
   };
 
-  return errorState ? (
-    <Alert
-      message="Error!"
-      description="An error occurred while accessing the server"
-      type="error"
-      showIcon
-    />
-  ) : (
+  return (
     <div>
-      <input type="text" value={inputState} onChange={inputChange} />
-      {loading ? (
-        <div>
-          <Spin className="spin" size="large" />
-        </div>
-      ) : (
-        <ul className="movie-container">
-          {movieState?.results.map((item) => (
-            <li key={item.id}>
-              <MovieItem
-                title={item.title}
-                release_date={formateDate(item.release_date)}
-                genres={item.genre_ids}
-                description={shortenDescription(item.overview)}
-                poster_path={item.poster_path}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      <Online>
+        {errorState ? (
+          <AlertComponent />
+        ) : (
+          <div>
+            <input type="text" value={inputState} onChange={inputChange} />
+            {loading ? (
+              <Spin className="spin" size="large" />
+            ) : (
+              <ul className="movie-container">
+                {movieState?.results.map((item) => (
+                  <li key={item.id}>
+                    <MovieItem
+                      title={item.title}
+                      release_date={formateDate(item.release_date)}
+                      genres={item.genre_ids}
+                      description={shortenDescription(item.overview)}
+                      poster_path={item.poster_path}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+            <ResponsivePagination
+              current={pageState}
+              total={movieState?.total_pages ?? 0}
+              onPageChange={setPageState}
+            />
+          </div>
+        )}
+      </Online>
+      <Offline>
+        <AlertComponent />
+      </Offline>
     </div>
   );
 };
