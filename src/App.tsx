@@ -17,9 +17,6 @@ const App = () => {
   const [inputState, setInputState] = useState(" ");
   const [pageState, setPageState] = useState(1);
 
-  console.log(movieState);
-  console.log("PAGES", pageState);
-
   const url = `https://api.themoviedb.org/3/search/movie?query=${inputState}&page=${pageState.toString()}`;
   const options = {
     method: "GET",
@@ -49,7 +46,7 @@ const App = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, 500);
+  }, 700);
 
   useEffect(() => {
     if (inputState.trim()) {
