@@ -28,4 +28,20 @@ export interface MovieProps {
   genres: number[];
   description: string;
   poster_path: string;
+  rateMovie: (id: string, session: string) => void;
+  movieId: number;
+  sessionToken: string;
+}
+
+export interface GuestSession {
+  success: boolean;
+  guest_session_id: string;
+  expires_at: string;
+}
+
+export interface RatedMovies {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
 }

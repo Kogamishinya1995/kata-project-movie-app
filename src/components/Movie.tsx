@@ -6,6 +6,9 @@ const MovieItem = ({
   genres,
   description,
   poster_path,
+  rateMovie,
+  movieId,
+  sessionToken,
 }: MovieProps) => (
   <div className="movie-item">
     <img src={`https://image.tmdb.org/t/p/original${poster_path}`} alt="" />
@@ -14,6 +17,13 @@ const MovieItem = ({
       <p>{release_date}</p>
       <p>{genres}</p>
       <p>{description}</p>
+      <button
+        onClick={() => {
+          rateMovie(movieId, sessionToken);
+        }}
+      >
+        rate
+      </button>
     </div>
   </div>
 );
