@@ -13,6 +13,7 @@ export interface Movie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  rating: number;
 }
 
 export interface MovieApi {
@@ -28,9 +29,11 @@ export interface MovieProps {
   genres: number[];
   description: string;
   poster_path: string;
-  rateMovie: (id: string, session: string) => void;
+  rateMovie: (id: number, session: string, starsCount: number) => void;
   movieId: number;
   sessionToken: string;
+  rating?: number;
+  vote_average: number;
 }
 
 export interface GuestSession {

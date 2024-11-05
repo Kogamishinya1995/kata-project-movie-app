@@ -1,7 +1,7 @@
 .movie-item {
     display: flex;
-    width: 454px;
-    height: 281px;
+    width: 600px;
+    height: 300px;
     gap: 0px;
     opacity: 0px;
     font-family: Inter UI;
@@ -10,6 +10,7 @@
     text-align: left;
     padding: 10px;
     box-shadow: 0px 4px 12px 0px #00000026;
+    position: relative;
 }
 
 .movie-container {
@@ -33,4 +34,9 @@
 
 .movie-item__title {
     font-size: 18px;
+}
+
+.movie-item__rating {
+    position: absolute;
+    right: 10px;
 }

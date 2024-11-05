@@ -28,7 +28,6 @@ const App = () => {
     headers: {
       accept: "application/json",
       Authorization:
-        // eslint-disable-next-line @cspell/spellchecker
         "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWVjMzVlY2RmZTk2YTgwOWJkODkwMmZiMTNkOWIwOCIsIm5iZiI6MTczMDQ4MDk3Mi42NjU3ODU4LCJzdWIiOiI2NzFlMDAwMWE0YWM4YTQzMmM1Yzk1MDEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.GuwoEE_PIEy9QyueO1fk_Butq1nM2qTvo-EY6NjTbrE",
     },
   };
@@ -66,7 +65,6 @@ const App = () => {
     if (inputState.trim()) {
       fetchMovies();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputState, pageState]);
 
   useEffect(() => {
@@ -77,7 +75,7 @@ const App = () => {
     setInputState(e.target.value);
   };
 
-  const rateMovie = (id: number, session: string) => {
+  const rateMovie = (id: number, session: string, starsCount: number) => {
     const ratedUrl = `https://api.themoviedb.org/3/movie/${id.toString()}/rating?guest_session_id=${session}`;
     const ratedOptions = {
       method: "POST",
@@ -87,19 +85,20 @@ const App = () => {
         Authorization:
           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhOWVjMzVlY2RmZTk2YTgwOWJkODkwMmZiMTNkOWIwOCIsIm5iZiI6MTczMDYxNDk1OS40MjAzNjU2LCJzdWIiOiI2NzFlMDAwMWE0YWM4YTQzMmM1Yzk1MDEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.nXoG4orvpoi17YEEdJyu1UYDgc8ZiAywvJDrj-ZX40U",
       },
-      body: JSON.stringify({ value: 7 }),
+      body: JSON.stringify({ value: starsCount }),
     };
 
     fetch(ratedUrl, ratedOptions)
       .then((res) => res.json())
       .then((json) => {
-        console.log("this rate one movie", json);
+        console.log("Rated one movie:", json);
         getRatedFilms();
       })
       .catch(() => {
-        console.error("not rated");
+        console.error("Failed to rate movie");
       });
   };
+
   const getRatedFilms = () => {
     if (!sessionState || !sessionState.guest_session_id) {
       console.error("Session is not available or session ID is missing");
@@ -119,7 +118,7 @@ const App = () => {
     fetch(urlRated, optionsRated)
       .then((res) => res.json())
       .then((json: RatedMovies) => {
-        console.log("this rated movie", json);
+        console.log("Rated movies:", json);
         setRatedMovieState(json);
       })
       .catch(() => {
@@ -155,13 +154,8 @@ const App = () => {
                       poster_path={item.poster_path}
                       movieId={item.id}
                       sessionToken={sessionState?.guest_session_id || ""}
-                      rateMovie={() => {
-                        if (sessionState) {
-                          rateMovie(item.id, sessionState.guest_session_id);
-                        } else {
-                          console.error("Session is not available");
-                        }
-                      }}
+                      rateMovie={rateMovie}
+                      vote_average={item.vote_average}
                     />
                   </li>
                 ))}
@@ -176,7 +170,20 @@ const App = () => {
               <ul>
                 {ratedMovieState?.results ? (
                   ratedMovieState.results.map((item) => (
-                    <li key={item.title}>{item.title}</li>
+                    <li key={item.id}>
+                      <MovieItem
+                        title={item.title}
+                        release_date={formateDate(item.release_date)}
+                        genres={item.genre_ids}
+                        description={shortenDescription(item.overview)}
+                        poster_path={item.poster_path}
+                        movieId={item.id}
+                        sessionToken={sessionState?.guest_session_id || ""}
+                        rateMovie={rateMovie}
+                        rating={item.rating}
+                        vote_average={item.vote_average}
+                      />
+                    </li>
                   ))
                 ) : (
                   <p>No rated movies available</p>
