@@ -8,7 +8,7 @@ import { UserContext } from "./MyContext";
 const MovieItem = ({
   title,
   release_date,
-  genres, // Это массив с id жанров
+  genres,
   description,
   poster_path,
   rateMovie,

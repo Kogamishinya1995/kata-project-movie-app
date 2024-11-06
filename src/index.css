@@ -13,7 +13,7 @@
     position: relative;
 }
 
-.movie-container {
+.movie-list {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -39,4 +39,9 @@
 .movie-item__rating {
     position: absolute;
     right: 10px;
+}
+
+
+.rated-movies {
+    list-style-type: none;
 }

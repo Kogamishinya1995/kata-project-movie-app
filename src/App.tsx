@@ -1,4 +1,4 @@
-import { Spin } from "antd";
+import { Tabs, Spin } from "antd";
 import debounce from "lodash/debounce";
 import { useEffect, useState, useCallback } from "react";
 import { Offline, Online } from "react-detect-offline";
@@ -10,11 +10,13 @@ import shortenDescription from "@Utils/shortenDescription.ts";
 import { MovieApi, GuestSession, RatedMovies } from "./types.ts";
 import "react-responsive-pagination/themes/classic.css";
 
+const { TabPane } = Tabs;
+
 const App = () => {
   const [movieState, setMovieState] = useState<MovieApi>();
   const [errorState, setErrorState] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [inputState, setInputState] = useState(" ");
+  const [inputState, setInputState] = useState("");
   const [pageState, setPageState] = useState(1);
   const [sessionState, setSessionState] = useState<GuestSession>();
   const [ratedMovieState, setRatedMovieState] = useState<RatedMovies>();
@@ -138,59 +140,65 @@ const App = () => {
         {errorState ? (
           <AlertComponent />
         ) : (
-          <div>
-            <input type="text" value={inputState} onChange={inputChange} />
-            {loading ? (
-              <Spin className="spin" size="large" />
-            ) : (
-              <ul className="movie-container">
-                {movieState?.results.map((item) => (
-                  <li key={item.id}>
-                    <MovieItem
-                      title={item.title}
-                      release_date={formateDate(item.release_date)}
-                      genres={item.genre_ids}
-                      description={shortenDescription(item.overview)}
-                      poster_path={item.poster_path}
-                      movieId={item.id}
-                      sessionToken={sessionState?.guest_session_id || ""}
-                      rateMovie={rateMovie}
-                      vote_average={item.vote_average}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-            <ResponsivePagination
-              current={pageState}
-              total={movieState?.total_pages ?? 0}
-              onPageChange={setPageState}
-            />
-            <div>
-              <ul>
-                {ratedMovieState?.results ? (
-                  ratedMovieState.results.map((item) => (
-                    <li key={item.id}>
-                      <MovieItem
-                        title={item.title}
-                        release_date={formateDate(item.release_date)}
-                        genres={item.genre_ids}
-                        description={shortenDescription(item.overview)}
-                        poster_path={item.poster_path}
-                        movieId={item.id}
-                        sessionToken={sessionState?.guest_session_id || ""}
-                        rateMovie={rateMovie}
-                        rating={item.rating}
-                        vote_average={item.vote_average}
-                      />
-                    </li>
-                  ))
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Search Movies" key="1">
+              <div>
+                <input type="text" value={inputState} onChange={inputChange} />
+                {loading ? (
+                  <Spin className="spin" size="large" />
                 ) : (
-                  <p>No rated movies available</p>
+                  <ul className="movie-list">
+                    {movieState?.results.map((item) => (
+                      <li key={item.id}>
+                        <MovieItem
+                          title={item.title}
+                          release_date={formateDate(item.release_date)}
+                          genres={item.genre_ids}
+                          description={shortenDescription(item.overview)}
+                          poster_path={item.poster_path}
+                          movieId={item.id}
+                          sessionToken={sessionState?.guest_session_id || ""}
+                          rateMovie={rateMovie}
+                          vote_average={item.vote_average}
+                        />
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </ul>
-            </div>
-          </div>
+                <ResponsivePagination
+                  current={pageState}
+                  total={movieState?.total_pages ?? 0}
+                  onPageChange={setPageState}
+                />
+              </div>
+            </TabPane>
+            <TabPane tab="Rated Movies" key="2">
+              <div>
+                <ul className="rated-movies-list">
+                  {ratedMovieState?.results ? (
+                    ratedMovieState.results.map((item) => (
+                      <li key={item.id}>
+                        <MovieItem
+                          title={item.title}
+                          release_date={formateDate(item.release_date)}
+                          genres={item.genre_ids}
+                          description={shortenDescription(item.overview)}
+                          poster_path={item.poster_path}
+                          movieId={item.id}
+                          sessionToken={sessionState?.guest_session_id || ""}
+                          rateMovie={rateMovie}
+                          rating={item.rating}
+                          vote_average={item.vote_average}
+                        />
+                      </li>
+                    ))
+                  ) : (
+                    <p>No rated movies available</p>
+                  )}
+                </ul>
+              </div>
+            </TabPane>
+          </Tabs>
         )}
       </Online>
       <Offline>
