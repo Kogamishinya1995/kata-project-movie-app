@@ -6,16 +6,9 @@ import {
   ReactNode,
 } from "react";
 
-export interface Genre {
-  id: number;
-  name: string;
-}
+import { Genre, GenresResponse } from "../types";
 
-export interface GenresResponse {
-  genres: Genre[];
-}
-
-interface MyProviderProps {
+export interface MyProviderProps {
   children: ReactNode;
 }
 
@@ -39,6 +32,7 @@ const Provider: React.FC<MyProviderProps> = ({ children }) => {
       .then((res) => res.json())
       .then((data: GenresResponse) => {
         setGenres(data.genres);
+        console.log(data.genres);
       })
       .catch(() => {
         console.error("genres didn't get!");

@@ -1,13 +1,14 @@
 import { Rate } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { MovieProps } from "../types";
+import { MovieProps, Genre } from "../types";
 import "react-circular-progressbar/dist/styles.css";
+import { UserContext } from "./MyContext";
 
 const MovieItem = ({
   title,
   release_date,
-  genres,
+  genres, // Это массив с id жанров
   description,
   poster_path,
   rateMovie,
@@ -19,6 +20,19 @@ const MovieItem = ({
   const [movieRating, setRating] = useState(rating === undefined ? 0 : rating);
   const [hoverRating, setHoverRating] = useState(0);
   const [starColor, setStarColor] = useState("#E9D100");
+
+  const movieGenresContext = useContext(UserContext);
+
+  const getGenreNames = (genreIds: number[]) =>
+    genreIds
+      .map((id) => {
+        const genre = movieGenresContext?.genres.find(
+          (g: Genre) => g.id === id
+        );
+        return genre ? genre.name : null;
+      })
+      .filter(Boolean)
+      .join(", ");
 
   const getStarColor = (ratingStars: number) => {
     if (ratingStars <= 3) return "#E90000";
@@ -82,7 +96,7 @@ const MovieItem = ({
           }}
         ></h1>
         <p>{release_date}</p>
-        <p>{genres}</p>
+        <p>{getGenreNames(genres)}</p>
         <p>{description}</p>
         <Rate
           count={10}

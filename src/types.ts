@@ -49,11 +49,15 @@ export interface RatedMovies {
   total_results: number;
 }
 
+export interface Genres {
+  genres: Genre[];
+}
+
 export interface Genre {
   id: number;
   name: string;
 }
 
-export interface Genres {
+export interface GenresResponse {
   genres: Genre[];
 }
