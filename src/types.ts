@@ -48,3 +48,12 @@ export interface RatedMovies {
   total_pages: number;
   total_results: number;
 }
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface Genres {
+  genres: Genre[];
+}
