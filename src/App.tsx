@@ -1,4 +1,4 @@
-import { Tabs, Spin } from "antd";
+import { Tabs, Spin, Input } from "antd";
 import debounce from "lodash/debounce";
 import { useEffect, useState, useCallback } from "react";
 import { Offline, Online } from "react-detect-offline";
@@ -10,14 +10,13 @@ import shortenDescription from "@Utils/shortenDescription.ts";
 import { MovieApi, GuestSession, RatedMovies } from "./types.ts";
 import "react-responsive-pagination/themes/classic.css";
 
-const { TabPane } = Tabs;
-
 const App = () => {
   const [movieState, setMovieState] = useState<MovieApi>();
   const [errorState, setErrorState] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inputState, setInputState] = useState("");
   const [pageState, setPageState] = useState(1);
+  const [ratedPageState, setRatedPageState] = useState(1);
   const [sessionState, setSessionState] = useState<GuestSession>();
   const [ratedMovieState, setRatedMovieState] = useState<RatedMovies>();
 
@@ -50,7 +49,7 @@ const App = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, 700);
+  }, 900);
 
   const guestSession = useCallback(() => {
     fetch(urlGuestSession, options)
@@ -67,7 +66,7 @@ const App = () => {
     if (inputState.trim()) {
       fetchMovies();
     }
-  }, [inputState, pageState]);
+  }, [inputState, pageState, ratedPageState]);
 
   useEffect(() => {
     guestSession();
@@ -92,8 +91,7 @@ const App = () => {
 
     fetch(ratedUrl, ratedOptions)
       .then((res) => res.json())
-      .then((json) => {
-        console.log("Rated one movie:", json);
+      .then(() => {
         getRatedFilms();
       })
       .catch(() => {
@@ -140,7 +138,13 @@ const App = () => {
       label: "Search Movies",
       children: (
         <div>
-          <input type="text" value={inputState} onChange={inputChange} />
+          <Input
+            type="text"
+            value={inputState}
+            onChange={inputChange}
+            allowClear
+            size="large"
+          />
           {loading ? (
             <Spin className="spin" size="large" />
           ) : (
@@ -175,7 +179,7 @@ const App = () => {
       label: "Rated Movies",
       children: (
         <div>
-          <ul className="rated-movies">
+          <ul className="movie-list">
             {ratedMovieState?.results ? (
               ratedMovieState.results.map((item) => (
                 <li key={item.id}>
@@ -197,6 +201,11 @@ const App = () => {
               <p>No rated movies available</p>
             )}
           </ul>
+          <ResponsivePagination
+            current={ratedPageState}
+            total={ratedMovieState?.total_pages ?? 0}
+            onPageChange={setRatedPageState}
+          />
         </div>
       ),
     },

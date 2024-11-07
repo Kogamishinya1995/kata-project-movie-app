@@ -1,6 +1,8 @@
 import { Rate } from "antd";
 import { useState, useEffect, useContext } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { formatTitle } from "@Utils/formatTitle";
+import { getStarColor } from "@Utils/getStarColor";
 import { MovieProps, Genre } from "../types";
 import "react-circular-progressbar/dist/styles.css";
 import { UserContext } from "./MyContext";
@@ -34,13 +36,6 @@ const MovieItem = ({
       .filter(Boolean)
       .join(", ");
 
-  const getStarColor = (ratingStars: number) => {
-    if (ratingStars <= 3) return "#E90000";
-    if (ratingStars <= 5) return "#E97E00";
-    if (ratingStars <= 7) return "#E9D100";
-    return "#66E900";
-  };
-
   useEffect(() => {
     const effectiveRating = hoverRating || movieRating;
     setStarColor(getStarColor(effectiveRating));
@@ -65,20 +60,11 @@ const MovieItem = ({
     }
   }, [rating]);
 
-  const formatTitle = (movieTitle: string, wordsPerLine: number) => {
-    const words = movieTitle.split(" ");
-    return words.reduce((formattedTitle, word, index) => {
-      const shouldAddLineBreak =
-        (index + 1) % wordsPerLine === 0 && index !== words.length - 1;
-      return formattedTitle + word + (shouldAddLineBreak ? " <br /> " : " ");
-    }, "");
-  };
-
   return (
     <div className="movie-item">
       <img src={`https://image.tmdb.org/t/p/original${poster_path}`} alt="" />
       <div className="movie-item__description">
-        <div className="movie-item__rating" style={{ width: 70, height: 70 }}>
+        <div className="movie-item__rating">
           <CircularProgressbar
             value={vote_average * 10}
             text={vote_average.toFixed(1)}
@@ -97,8 +83,9 @@ const MovieItem = ({
         ></h1>
         <p>{release_date}</p>
         <p>{getGenreNames(genres)}</p>
-        <p>{description}</p>
+        <p className="movie-item__text">{description}</p>
         <Rate
+          className="movie-item__rate"
           count={10}
           value={movieRating}
           onChange={handleRatingChange}
